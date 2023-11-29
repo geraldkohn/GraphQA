@@ -1,6 +1,25 @@
+from enum import Enum
 import json
 import config
 from py2neo import Graph, Node
+
+class Neo4jLabel(Enum):
+    # Node Label
+    Disease = "Disease"
+    Symptom = "Symptom"
+    Drug = "Drug"
+    Department = "Department"
+    Food = "Food"
+    Check = "Check"
+    
+    # Relation Label
+    ShouldNotEat = "should_not_eat"
+    ShouldEat = "should_eat"
+    RecommandDrug = "recommand_drug"
+    NeedCheck = "need_check"
+    HasSymptom = "has_symptom"
+    AcompanyWith = "acompany_with"
+    BelongTo = "belong_to"
 
 class GraphMessage:
     def __init__(self):
@@ -27,13 +46,6 @@ class GraphBuilder:
         self._neo4j_driver = Graph('bolt://{}:{}'.format(self._config.neo4j_host, self._config.neo4j_port), auth=(self._config.neo4j_user, self._config.neo4j_password))
         
         self.graph = GraphMessage()
-        
-        self._neo4j_label_disease = "Disease"
-        self._neo4j_label_symptom = "Symptom"
-        self._neo4j_label_drug = "Drug"
-        self._neo4j_label_department = 'Department'
-        self._neo4j_label_food = 'Food'
-        self._neo4j_label_check = 'Check'
         
         self._attr_name = 'name'
         self._attr_department = 'department'
@@ -135,7 +147,7 @@ class GraphBuilder:
                     graph.disease_disease_coexist.append(relation)
     
     def build_disease_node(self, disease: dict):
-        node = Node(self._neo4j_label_disease, **disease)
+        node = Node(Neo4jLabel.Disease, **disease)
         self._neo4j_driver.create(node)
     
     def build_normal_node(self, label: str, node_name: str):
@@ -155,32 +167,32 @@ class GraphBuilder:
     def build_nodes(self):
         for disease_dict in self.graph.diseases:
             self.build_disease_node(disease=disease_dict)
-        for symtom_name in self.graph.symptoms:
-            self.build_normal_node(label=self._neo4j_label_symptom, node_name=symtom_name)
+        for symptom_name in self.graph.symptoms:
+            self.build_normal_node(label=Neo4jLabel.Symptom.value, node_name=symptom_name)
         for drug_name in self.graph.drugs:
-            self.build_normal_node(label=self._neo4j_label_drug, node_name=drug_name)
+            self.build_normal_node(label=Neo4jLabel.Drug.value, node_name=drug_name)
         for department_name in self.graph.departments:
-            self.build_normal_node(label=self._neo4j_label_department, node_name=department_name)
+            self.build_normal_node(label=Neo4jLabel.Department.value, node_name=department_name)
         for food_name in self.graph.foods:
-            self.build_normal_node(label=self._neo4j_label_food, node_name=food_name)
+            self.build_normal_node(label=Neo4jLabel.Food.value, node_name=food_name)
         for check_name in self.graph.checks:
-            self.build_normal_node(label=self._neo4j_label_check, node_name=check_name)
+            self.build_normal_node(label=Neo4jLabel.Check.value, node_name=check_name)
         
     def build_edges(self):
         for edge in self.graph.disease_not_eat:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_food, start_node_name=edge[0], end_node_name=edge[1], relation_type='should_not_eat', relation_name='忌吃')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.ShouldNotEat.value, relation_name='忌吃')
         for edge in self.graph.disease_do_eat:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_food, start_node_name=edge[0], end_node_name=edge[1], relation_type='should_eat', relation_name='宜吃')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.ShouldEat.value, relation_name='宜吃')
         for edge in self.graph.disease_drug:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_drug, start_node_name=edge[0], end_node_name=edge[1], relation_type='recommand_drug', relation_name='推荐用药')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Drug.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.RecommandDrug.value, relation_name='推荐用药')
         for edge in self.graph.disease_check:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_check, start_node_name=edge[0], end_node_name=edge[1], relation_type='need_check', relation_name='需要做的检查')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Check.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.NeedCheck.value, relation_name='需要做的检查')
         for edge in self.graph.symptoms:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_symptom, start_node_name=edge[0], end_node_name=edge[1], relation_type='has_symptom', relation_name='症状')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.HasSymptom.value, relation_name='症状')
         for edge in self.graph.disease_disease_coexist:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_disease, start_node_name=edge[0], end_node_name=edge[1], relation_type='acompany_with', relation_name='并发症')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Disease.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.AcompanyWith.value, relation_name='并发症')
         for edge in self.graph.disease_department:
-            self.build_edge(start_node_label=self._neo4j_label_disease, end_node_label=self._neo4j_label_department, start_node_name=edge[0], end_node_name=edge[1], relation_type='belong_to', relation_name='所属科室')
+            self.build_edge(start_node_label=Neo4jLabel.Disease.value, end_node_label=Neo4jLabel.Department.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=Neo4jLabel.BelongTo.value, relation_name='所属科室')
         
     def run(self):
         self.handle_data()

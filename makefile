@@ -1,4 +1,4 @@
-run-neo4j:
+deploy-neo4j:
 	@docker run \
 	--restart always \
 	--publish=7474:7474 \

@@ -13,7 +13,7 @@ pip install -r requirements.txt
 2. 使用 Docker 部署 Neo4j
 
 ```shell
-make run-neo4j
+make deploy-neo4j
 ```
 
 3. 导入知识图谱数据
