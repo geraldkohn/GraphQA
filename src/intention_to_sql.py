@@ -29,7 +29,7 @@ class Intention(Enum):
     NotSupportQuery = 18
 
 def handle_DiseaseDesc(disease_name: str) -> str:
-    return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.desc"
+    return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.description"
     
 def handle_DiseasePrevent(disease_name: str) -> str:
     return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.prevent"
@@ -44,7 +44,7 @@ def handle_DiseaseGetWay(disease_name: str) -> str:
     return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.get_way"
 
 def handle_DiseasePeopleEasyGet(disease_name: str) -> str:
-    return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.easy_get"
+    return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.people_easy_get"
 
 def handle_DiseaseCureWay(disease_name: str) -> str:
     return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.cure_way"

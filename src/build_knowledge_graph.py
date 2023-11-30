@@ -51,22 +51,22 @@ class GraphBuilder:
         self._attr_department = 'department'
         self._attr_symptom = 'symptom'
         self._attr_drug = 'drug'
-        self._attr_should_eat = 'do_eat'
-        self._attr_should_not_eat = 'not_eat'
+        self._attr_should_eat = 'should_eat'
+        self._attr_should_not_eat = 'should_not_eat'
         self._attr_check = 'check'
         self._attr_coexist_disease = 'coexist_disease'
         
-        self._attr_desc = 'desc'
+        self._attr_description = 'description'
         self._attr_prevent = 'prevent'
         self._attr_cause = 'cause'
         self._attr_get_prob = 'get_prob'
         self._attr_get_way = 'get_way'
-        self._attr_people_easy_get = 'easy_get'
+        self._attr_people_easy_get = 'people_easy_get'
         self._attr_cure_way = 'cure_way'
         self._attr_cure_time = 'cure_time'
         self._attr_cure_prob = 'cure_prob'
         
-        self._disease_info = [self._attr_name, self._attr_desc, self._attr_prevent, self._attr_cause, self._attr_get_prob, self._attr_get_way, self._attr_people_easy_get, self._attr_cure_way, self._attr_cure_time, self._attr_cure_prob]
+        self._disease_info = [self._attr_name, self._attr_description, self._attr_prevent, self._attr_cause, self._attr_get_prob, self._attr_get_way, self._attr_people_easy_get, self._attr_cure_way, self._attr_cure_time, self._attr_cure_prob]
     
     def handle_data(self):
         with open(self._config.data_path, "r") as file:
