@@ -8,8 +8,14 @@ deploy-neo4j:
 	--volume ./neo4j_volume/logs:/logs \
 	neo4j:4.4.28
 
-import-data:
-	@python ./src/build_knowledge_graph.py
+import-all-data:
+	@python ./src/graph.py --data all
+
+import-test-data:
+	@python ./src/graph.py --data test
 
 clean:
-	@find . -name "*.pyc" -exec rm -f {} \;
+	@find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
+
+test:
+	@python ./src/test.py
