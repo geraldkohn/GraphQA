@@ -16,8 +16,8 @@ pip install -r requirements.txt
 make deploy-neo4j
 ```
 
-3. 导入知识图谱数据
+3. 导入全量知识图谱数据
 
 ```shell
-make import-data
+make import-all-data
 ```
