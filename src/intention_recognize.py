@@ -1,6 +1,7 @@
 import ahocorasick
-from graph import GraphMessage
-from const import GraphLabel, IntentionCategory, QueryWordCollection
+
+from .graph import GraphMessage
+from .const import GraphLabel, IntentionCategory, QueryWordCollection
 
 class IntentionRecognize:
     """

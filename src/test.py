@@ -1,12 +1,12 @@
-from intention_recognize import IntentionRecognize
-from graph import DataLoader
-from const import QueryWordCollection
-import config
+from .intention_recognize import IntentionRecognize
+from .graph import DataLoader
+from .const import QueryWordCollection
+from .config import Config
 
 def test_intention_recognize_classify():
     print("-----------------------------------测试意图识别-----------------------------------")
     
-    cfg = config.Config()
+    cfg = Config()
     dataloader = DataLoader(cfg.test_data_path)
     dataloader.load()
     query_word_collection = QueryWordCollection()

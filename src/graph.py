@@ -1,8 +1,9 @@
 import json
-import config
 import argparse
 from py2neo import Graph, Node
-from const import GraphLabel
+
+from .const import GraphLabel
+from .config import Config
 
 class GraphMessage:
     def __init__(self):
@@ -129,7 +130,7 @@ class DataLoader:
 
 class GraphBuilder:
     def __init__(self, graph: GraphMessage):
-        self._config = config.Config()
+        self._config = Config()
         self._neo4j_driver = Graph('bolt://{}:{}'.format(self._config.neo4j_host, self._config.neo4j_port), auth=(self._config.neo4j_user, self._config.neo4j_password))
         self.graph = graph
     
@@ -189,7 +190,7 @@ def main():
     parser.add_argument('--data', type=str, default="all")
     args = parser.parse_args()
     
-    cfg = config.Config()
+    cfg = Config()
     
     data_path = ''
     
