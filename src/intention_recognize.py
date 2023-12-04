@@ -1,9 +1,10 @@
+from utils import logger
 import ahocorasick
 
-from graph import GraphMessage
+from build_graph import GraphMessage
 from const import GraphLabel, IntentionCategory, QueryWordCollection
 
-class IntentionRecognize:
+class IntentionRecognizer:
     """
     意图是通过 实体+查询词 构成的
     """
@@ -65,6 +66,8 @@ class IntentionRecognize:
         """
         根据查询关键词和查询中实体来分析意图, 返回意图和实体 
         """
+        
+        logger.info(f"正在根据分析自然语言查询中的意图和实体... | 查询: {normal_language_question}")
         
         # 实体列表
         entity_list: list[tuple[GraphLabel, str]] = []

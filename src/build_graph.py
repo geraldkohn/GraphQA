@@ -1,7 +1,7 @@
 import json
-import argparse
 from py2neo import Graph, Node
 
+from utils import logger
 from const import GraphLabel
 from config import Config
 
@@ -51,12 +51,16 @@ class DataLoader:
         self._disease_info = [self._attr_name, self._attr_description, self._attr_prevent, self._attr_cause, self._attr_get_prob, self._attr_get_way, self._attr_people_easy_get, self._attr_cure_way, self._attr_cure_time, self._attr_cure_prob]
     
     def load(self):
+        logger.info(f"正在加载数据...")
+        cnt = 1
         with open(self.data_path, "r") as file:
             line = file.readline()
             while line:
+                logger.info(f"正在加载第 {cnt} 行数据...")
                 line_dict = json.loads(line.strip())
                 self._handle_single_line(graph=self.graph, data=line_dict)
                 line = file.readline()
+                cnt = cnt+1
                 
     def _handle_single_line(self, graph: GraphMessage, data: dict):
         disease = {}
@@ -156,58 +160,59 @@ class GraphBuilder:
             print(e)
     
     def build_nodes(self):
+        logger.info(f"正在导入节点数据到 Neo4j ...")
+        
+        logger.info(f"正在导入 疾病 节点 ..., 共 {len(self.graph.diseases)} 条")
         for disease_dict in self.graph.diseases:
             self._build_disease_node(disease=disease_dict)
+            
+        logger.info(f"正在导入 症状 节点 ..., 共 {len(self.graph.symptoms)} 条")
         for symptom_name in self.graph.symptoms:
             self._build_normal_node(label=GraphLabel.Symptom.value, node_name=symptom_name)
+            
+        logger.info(f"正在导入 药品 节点 ..., 共 {len(self.graph.drugs)} 条")
         for drug_name in self.graph.drugs:
             self._build_normal_node(label=GraphLabel.Drug.value, node_name=drug_name)
+            
+        logger.info(f"正在导入 科室 节点 ..., 共 {len(self.graph.departments)} 条")
         for department_name in self.graph.departments:
             self._build_normal_node(label=GraphLabel.Department.value, node_name=department_name)
+        
+        logger.info(f"正在导入 食物 节点 ..., 共 {len(self.graph.foods)} 条")
         for food_name in self.graph.foods:
             self._build_normal_node(label=GraphLabel.Food.value, node_name=food_name)
+            
+        logger.info(f"正在导入 检查 节点 ..., 共 {len(self.graph.checks)} 条")
         for check_name in self.graph.checks:
             self._build_normal_node(label=GraphLabel.Check.value, node_name=check_name)
         
     def build_edges(self):
+        logger.info(f"正在导入边数据到 Neo4j ...")
+        
+        logger.info(f"正在导入 忌吃 边 ..., 共 {len(self.graph.disease_not_eat)} 条")
         for edge in self.graph.disease_not_eat:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldNotEat.value, relation_name='忌吃')
+            
+        logger.info(f"正在导入 宜吃 边 ..., 共 {len(self.graph.disease_do_eat)} 条")
         for edge in self.graph.disease_do_eat:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldEat.value, relation_name='宜吃')
+            
+        logger.info(f"正在导入 推荐用药 边 ..., 共 {len(self.graph.disease_drug)} 条")
         for edge in self.graph.disease_drug:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Drug.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.RecommandDrug.value, relation_name='推荐用药')
+            
+        logger.info(f"正在导入 需要做的检查 边 ..., 共 {len(self.graph.disease_check)} 条")
         for edge in self.graph.disease_check:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Check.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.NeedCheck.value, relation_name='需要做的检查')
+            
+        logger.info(f"正在导入 症状 边 ..., 共 {len(self.graph.disease_symptom)} 条")
         for edge in self.graph.symptoms:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.HasSymptom.value, relation_name='症状')
+            
+        logger.info(f"正在导入 并发症 边 ..., 共 {len(self.graph.disease_disease_coexist)} 条")
         for edge in self.graph.disease_disease_coexist:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Disease.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.AcompanyWith.value, relation_name='并发症')
+            
+        logger.info(f"正在导入 所属科室 边 ..., 共 {len(self.graph.disease_department)} 条")
         for edge in self.graph.disease_department:
             self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Department.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.BelongTo.value, relation_name='所属科室')
-
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--data', type=str, default="all")
-    args = parser.parse_args()
-    
-    cfg = Config()
-    
-    data_path = ''
-    
-    if args.data == 'all':
-        data_path = cfg.data_path
-    elif args.data == 'test':
-        data_path = cfg.test_data_path
-    else:
-        # 默认跑测试
-        data_path = cfg.test_data_path
-    
-    dataloader = DataLoader(data_path)
-    dataloader.load()
-    
-    graph_builder = GraphBuilder(dataloader.graph)
-    graph_builder.build_nodes()
-    graph_builder.build_edges()
-
-if __name__ == '__main__':
-    main()

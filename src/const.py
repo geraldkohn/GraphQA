@@ -20,33 +20,33 @@ class GraphLabel(Enum):
 
 class IntentionCategory(Enum):
     # Disease Info
-    DiseaseDesc = "DiseaseDesc" # 疾病描述
-    DiseasePrevent = "DiseasePrevent" # 疾病预防措施
-    DiseaseCause = "DiseaseCause" # 疾病原因
-    DiseaseGetProb = "DiseaseGetProb" # 疾病染病概率
-    DiseaseGetWay = "DiseaseGetWay" # 疾病染病方式
-    DiseasePeopleEasyGet = "DiseasePeopleEasyGet" # 疾病易感染人群
-    DiseaseCureWay = "DiseaseCureWay" # 疾病治疗方法
-    DiseaseCureTime = "DiseaseCureTime" # 疾病治愈时长
-    DiseaseCureProb = "DiseaseCureProb" # 疾病治愈概率
+    DiseaseDescription = 1 # 疾病描述
+    DiseasePrevent = 2 # 疾病预防措施
+    DiseaseCause = 3 # 疾病原因
+    DiseaseGetProb = 4 # 疾病染病概率
+    DiseaseGetWay = 5 # 疾病染病方式
+    DiseasePeopleEasyGet = 6 # 疾病易感染人群
+    DiseaseCureWay = 7 # 疾病治疗方法
+    DiseaseCureTime = 8 # 疾病治愈时长
+    DiseaseCureProb = 9 # 疾病治愈概率
     
     # Relations From Disease To Others
-    DiseaseShouldNotEat = "DiseaseShouldNotEat" # 得了该疾病不能吃什么
-    DiseaseShouldEat = "DiseaseShouldEat" # 得了该疾病应该吃什么
-    DiseaseDrug = "DiseaseDrug" # 疾病推荐药品
-    DiseaseCheck = "DiseaseCheck" # 得了疾病要做的检查
-    DiseaseSymptom = "DiseaseSymptom" # 疾病的症状
-    DiseaseCoExist = "DiseaseCoExist" # 疾病的并发症
-    DiseaseDepartment = "DiseaseDepartment" # 疾病属于的科室
+    DiseaseShouldNotEat = 10 # 得了该疾病不能吃什么
+    DiseaseShouldEat = 11 # 得了该疾病应该吃什么
+    DiseaseDrug = 12 # 疾病推荐药品
+    DiseaseCheck = 13 # 得了疾病要做的检查
+    DiseaseSymptom = 14 # 疾病的症状
+    DiseaseCoExist = 15 # 疾病的并发症
+    DiseaseDepartment = 16 # 疾病属于的科室
     
     # Relations From Others To Disease
-    SymptomDisease = "SymptomDisease" # 查询症可能患有哪些疾病
-    DrugDisease = "DrugDisease" # 查询药物可以治疗哪些疾病
-    DepartmentDisease = "DepartmentDisease" # 查询科室可以诊断哪些疾病
-    CheckDisease = "CheckDisease" # 查询此检查还可以被哪些疾病需要
+    SymptomDisease = 17 # 查询症可能患有哪些疾病
+    DrugDisease = 18 # 查询药物可以治疗哪些疾病
+    DepartmentDisease = 19 # 查询科室可以诊断哪些疾病
+    CheckDisease = 20 # 查询此检查还可以被哪些疾病需要
     
     # Not Support
-    NotSupport = "NotSupport"
+    NotSupport = 21
 
 class QueryWordCollection:
     def __init__(self):

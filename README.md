@@ -4,20 +4,27 @@ Knowledge Graph-based Question-Answering System.
 
 ## 部署
 
-1. 安装 Python 依赖包 
+* 安装 Python 依赖包 
 
 ```shell
 pip install -r requirements.txt
 ```
 
-2. 使用 Docker 部署 Neo4j
+* 使用 Docker 部署 Neo4j
 
 ```shell
 make deploy-neo4j
 ```
 
-3. 导入全量知识图谱数据
+* 启动
 
-```shell
-make import-all-data
-```
+    * 导入全量数据并启动
+
+    ```shell
+    make run-all
+    ```
+
+    * 导入测试数据并启动
+    ```shell
+    make run-test
+    ```

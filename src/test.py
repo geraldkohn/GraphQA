@@ -1,7 +1,7 @@
-from .intention_recognize import IntentionRecognize
-from .graph import DataLoader
-from .const import QueryWordCollection
-from .config import Config
+from intention_recognize import IntentionRecognizer
+from build_graph import DataLoader
+from const import QueryWordCollection
+from config import Config
 
 def test_intention_recognize_classify():
     print("-----------------------------------测试意图识别-----------------------------------")
@@ -11,7 +11,7 @@ def test_intention_recognize_classify():
     dataloader.load()
     query_word_collection = QueryWordCollection()
     
-    intention_recognize = IntentionRecognize(dataloader.graph, query_word_collection)
+    intention_recognize = IntentionRecognizer(dataloader.graph, query_word_collection)
     
     query_list = [
         "如何预防脑血管病",

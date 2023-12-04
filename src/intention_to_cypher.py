@@ -1,6 +1,7 @@
-from const import IntentionCategory
+from const import GraphLabel, IntentionCategory
+from utils import logger
 
-def handle_DiseaseDesc(disease_name: str) -> str:
+def handle_DiseaseDescription(disease_name: str) -> str:
     return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.description"
     
 def handle_DiseasePrevent(disease_name: str) -> str:
@@ -63,37 +64,88 @@ def handle_CheckDisease(check_name: str) -> str:
 def handle_NotSupportQuery() -> str:
     return "not_support"
 
-class IntentionQueryToSQL:
+class CypherGenerater:
     def __init__(self):
-        self.query_dict = {
-            IntentionCategory.DiseaseDesc: handle_DiseaseDesc,
-            IntentionCategory.DiseasePrevent: handle_DiseasePrevent,
-            IntentionCategory.DiseaseCause: handle_DiseaseCause,
-            IntentionCategory.DiseaseGetProb: handle_DiseaseGetProb,
-            IntentionCategory.DiseaseGetWay: handle_DiseaseGetWay,
-            IntentionCategory.DiseasePeopleEasyGet: handle_DiseasePeopleEasyGet,
-            IntentionCategory.DiseaseCureWay: handle_DiseaseCureWay,
-            IntentionCategory.DiseaseCureTime: handle_DiseaseCureTime,
-            IntentionCategory.DiseaseCureProb: handle_DiseaseCureProb,
-            
-            IntentionCategory.DiseaseShouldEat: handle_DiseaseShouldEat,
-            IntentionCategory.DiseaseShouldNotEat: handle_DiseaseShouldNotEat,
-            IntentionCategory.DiseaseDrug: handle_DiseaseDrug,
-            IntentionCategory.DiseaseCheck: handle_DiseaseCheck,
-            IntentionCategory.DiseaseCoExist: handle_DiseaseCoExist,
-            IntentionCategory.DiseaseDepartment: handle_DiseaseDepartment,
-            
-            IntentionCategory.SymptomDisease: handle_SymptomDisease,
-            IntentionCategory.DrugDisease: handle_DrugDisease,
-            IntentionCategory.DepartmentDisease: handle_DepartmentDisease,
-            IntentionCategory.CheckDisease: handle_CheckDisease,
-            
-            IntentionCategory.NotSupport: handle_NotSupportQuery,
-        }
-
-    def intention_query_to_sql(self, query_intention: IntentionCategory) -> str:
-        '''
-        根据意图使用知识图谱查询语言, 完成查询
-        '''
-        sql = self.query_dict.get(query_intention, IntentionCategory.NotSupport)()
-        return sql
+        pass
+    
+    def generate(self, intention: IntentionCategory, entity_map: dict[GraphLabel, list[str]]) -> list[str]:
+        """
+        根据意图和实体, 生成 Cypher 查询语句 
+        """
+        
+        logger.info(f"根据意图和实体, 正在生成 Cypher 查询语句... | 意图: {intention} | 实体: {entity_map}")
+        
+        sqls: list[str] = []
+        
+        if intention == IntentionCategory.DiseaseDescription:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseDescription(disease_name=disease))
+        elif intention == IntentionCategory.DiseasePrevent:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseasePrevent(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCause:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCause(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseGetProb:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseGetProb(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseGetWay:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseGetWay(disease_name=disease))
+        elif intention == IntentionCategory.DiseasePeopleEasyGet:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseasePeopleEasyGet(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCureWay:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCureWay(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCureTime:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCureTime(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCureProb:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCureProb(disease_name=disease))
+        
+        elif intention == IntentionCategory.DiseaseShouldNotEat:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseShouldNotEat(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseShouldEat:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseShouldEat(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseDrug:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseDrug(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCheck:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCheck(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseSymptom:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseSymptom(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseCoExist:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseCoExist(disease_name=disease))
+        elif intention == IntentionCategory.DiseaseDepartment:
+            for disease in entity_map[GraphLabel.Disease]:
+                sqls.append(handle_DiseaseDepartment(disease_name=disease))
+       
+        elif intention == IntentionCategory.SymptomDisease:
+            for symptom in entity_map[GraphLabel.Symptom]:
+                sqls.append(handle_SymptomDisease(symptom_name=symptom))
+        elif intention == IntentionCategory.DrugDisease:
+            for drug in entity_map[GraphLabel.Drug]:
+                sqls.append(handle_DrugDisease(drug_name=drug))
+        elif intention == IntentionCategory.DepartmentDisease:
+            for department in entity_map[GraphLabel.Department]:
+                sqls.append(handle_DepartmentDisease(department_name=department))
+        elif intention == IntentionCategory.CheckDisease:
+            for check in entity_map[GraphLabel.Check]:
+                sqls.append(handle_CheckDisease(check_name=check))
+        
+        elif intention == IntentionCategory.NotSupport:
+            pass
+        
+        else:
+            pass
+        
+        logger.info(f"已生成的 Cypher 语句 | 长度: {len(sqls)} | 内容: {sqls}")
+        
+        return sqls

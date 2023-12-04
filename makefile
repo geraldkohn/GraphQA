@@ -8,10 +8,10 @@ deploy-neo4j:
 	--volume ./neo4j_volume/logs:/logs \
 	neo4j:4.4.28
 
-import-all-data:
+run-all:
 	@python ./src/graph.py --data all
 
-import-test-data:
+run-test:
 	@python ./src/graph.py --data test
 
 clean:
