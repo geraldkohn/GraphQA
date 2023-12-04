@@ -2,8 +2,8 @@ import json
 import argparse
 from py2neo import Graph, Node
 
-from .const import GraphLabel
-from .config import Config
+from const import GraphLabel
+from config import Config
 
 class GraphMessage:
     def __init__(self):

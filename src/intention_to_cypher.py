@@ -1,4 +1,4 @@
-from .const import IntentionCategory
+from const import IntentionCategory
 
 def handle_DiseaseDesc(disease_name: str) -> str:
     return f"MATCH (m:Disease) where m.name = '{disease_name}' return m.name, m.description"
