@@ -135,18 +135,18 @@ class GraphBuilder:
         self.graph = graph
     
     def _build_disease_node(self, disease: dict):
-        node = Node(GraphLabel.Disease, **disease)
+        node = Node(GraphLabel.Disease.value, **disease)
         try:
             self._neo4j_driver.create(node)
         except Exception as e:
-            print(e)
+            print(f"Exception: {e}")
     
     def _build_normal_node(self, label: str, node_name: str):
         node = Node(label, name=node_name)
         try: 
             self._neo4j_driver.create(node)
         except Exception as e:
-            print(e)
+            print(f"Exception: {e}")
     
     def _build_edge(self, start_node_label: str, end_node_label: str, start_node_name: str, end_node_name: str, relation_type: str, relation_name: str):
         query = "match(p:%s),(q:%s) where p.name='%s' and q.name='%s' create (p)-[relation:%s{name:'%s'}]->(q)" % (start_node_label, end_node_label, start_node_name, end_node_name, relation_type, relation_name)
