@@ -18,7 +18,7 @@ class GraphSearcher:
         try:
             res = self._neo4j_driver.run(sql).data()
         except Exception as e:
-            logger.info(f"查询 Neo4j 失败: {e}")
+            logger.error(f"查询 Neo4j 失败: {e}")
         finally:
             return self._handle_result_from_neo4j(intention=intention, result_list=res)
     

@@ -17,7 +17,7 @@ class IntentionRecognizer:
         
     def _build_search_entity_trie_tree(self, graphMessage: GraphMessage):
         """
-        构造前缀树, 用于匹配实体关键词和实体类别
+        构造前缀树, 用于匹配查询关键词和实体类别
         """
         trie_tree = ahocorasick.Automaton()
         trie_node_list = []
@@ -35,6 +35,7 @@ class IntentionRecognizer:
             trie_node_list.append(tuple([GraphLabel.Check, check]))
         for trie_node in trie_node_list:
             trie_tree.add_word(trie_node[1], trie_node)
+        logger.info("正在构造实体前缀树")
         trie_tree.make_automaton()
         return trie_tree
     
@@ -49,6 +50,7 @@ class IntentionRecognizer:
                 trie_node_list.append(tuple([query_word.uid, word]))
         for trie_node in trie_node_list:
             trie_tree.add_word(trie_node[1], trie_node)
+        logger.info("正在构造疑问词前缀树")
         trie_tree.make_automaton()
         return trie_tree
     
@@ -83,68 +85,75 @@ class IntentionRecognizer:
         # 查询关键词类别
         uid_set = set(value[0] for value in query_word_list)
         
+        intention: IntentionCategory = IntentionCategory.NotSupport
+        entity_dict: dict[GraphLabel, list[str]] = self._entity_list_to_dict(entity_list)
+        
         # 疾病描述
         # 暂时没想好怎么匹配
         
         # 疾病预防措施
         if (GraphLabel.Disease in label_set) and (self.query_words.Prevent.uid in uid_set):
-            return IntentionCategory.DiseasePrevent, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseasePrevent
         # 疾病病因
         elif (GraphLabel.Disease in label_set) and (self.query_words.Why.uid in uid_set):
-            return IntentionCategory.DiseaseCause, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCause
         # 疾病染病概率
         elif (GraphLabel.Disease in label_set) and (self.query_words.GetSick.uid in uid_set) and (self.query_words.Prob.uid in uid_set):
-            return IntentionCategory.DiseaseGetProb, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseGetProb
         # 疾病染病方式
         elif (GraphLabel.Disease in label_set) and (self.query_words.GetSick.uid in uid_set) and (self.query_words.How.uid in uid_set):
-            return IntentionCategory.DiseaseGetWay, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseGetWay
         # 疾病易感染人群
         elif (GraphLabel.Disease in label_set) and (self.query_words.GetSick.uid in uid_set) and (self.query_words.People.uid in uid_set):
-            return IntentionCategory.DiseasePeopleEasyGet, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseasePeopleEasyGet
         # 疾病治疗方法
         elif (GraphLabel.Disease in label_set) and (self.query_words.Treat.uid in uid_set) and (self.query_words.How.uid in uid_set):
-            return IntentionCategory.DiseaseCureWay, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCureWay
         # 疾病治愈时长
         elif (GraphLabel.Disease in label_set) and (self.query_words.Treat.uid in uid_set) and (self.query_words.Time.uid in uid_set):
-            return IntentionCategory.DiseaseCureTime, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCureTime
         # 疾病治愈概率
         elif (GraphLabel.Disease in label_set) and (self.query_words.Treat.uid in uid_set) and (self.query_words.Prob.uid in uid_set):
-            return IntentionCategory.DiseaseCureProb, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCureProb
         
         # 得了该疾病不能吃什么
         elif (GraphLabel.Disease in label_set) and (self.query_words.No.uid in uid_set) and (self.query_words.Eat.uid in uid_set):
-            return IntentionCategory.DiseaseShouldNotEat, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseShouldNotEat
         # 得了该疾病应该吃什么
         elif (GraphLabel.Disease in label_set) and (self.query_words.Eat.uid in uid_set):
-            return IntentionCategory.DiseaseShouldEat, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseShouldEat
         # 疾病推荐药品
         elif (GraphLabel.Disease in label_set) and (self.query_words.Drug.uid in uid_set):
-            return IntentionCategory.DiseaseDrug, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseDrug
         # 得了疾病要做的检查
         elif (GraphLabel.Disease in label_set) and (self.query_words.Check.uid in uid_set):
-            return IntentionCategory.DiseaseCheck, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCheck
         # 疾病的症状
         elif (GraphLabel.Disease in label_set) and (self.query_words.Symptom.uid in uid_set):
-            return IntentionCategory.DiseaseSymptom, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseSymptom
         # 疾病的并发症
         elif (GraphLabel.Disease in label_set) and (self.query_words.Coexist.uid in uid_set):
-            return IntentionCategory.DiseaseCoExist, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseCoExist
         # 疾病属于的科室
         elif (GraphLabel.Disease in label_set) and (self.query_words.Department.uid in uid_set):
-            return IntentionCategory.DiseaseDepartment, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DiseaseDepartment
         
         # 查询症状会导致哪些疾病
         elif (GraphLabel.Symptom in label_set) and (self.query_words.Disease.uid in uid_set):
-            return IntentionCategory.SymptomDisease, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.SymptomDisease
         # 查询药物可以治疗哪些疾病
         elif (GraphLabel.Drug in label_set) and (self.query_words.Treat.uid in uid_set):
-            return IntentionCategory.DrugDisease, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DrugDisease
         # 查询科室可以诊断哪些疾病
         elif (GraphLabel.Department in label_set) and ((self.query_words.Treat.uid in uid_set) or (self.query_words.Diagnose.uid in uid_set)):
-            return IntentionCategory.DepartmentDisease, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.DepartmentDisease
         # 查询此检查还可以被哪些疾病需要
         elif (GraphLabel.Check in label_set) and ((self.query_words.Check.uid in uid_set) or (self.query_words.Disease.uid in uid_set)):
-            return IntentionCategory.CheckDisease, self._entity_list_to_dict(entity_list)
+            intention = IntentionCategory.CheckDisease
         # Not Support
         else:
-            return IntentionCategory.NotSupport, {}
+            intention = IntentionCategory.NotSupport
+        
+        logger.info(f"已分析出自然语言的意图和包含的实体 | 查询: {normal_language_question} | 意图: {intention} | 包含的实体: {entity_dict}")
+        
+        return intention, entity_dict

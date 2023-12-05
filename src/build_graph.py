@@ -56,11 +56,11 @@ class DataLoader:
         with open(self.data_path, "r") as file:
             line = file.readline()
             while line:
-                logger.info(f"正在加载第 {cnt} 行数据...")
                 line_dict = json.loads(line.strip())
                 self._handle_single_line(graph=self.graph, data=line_dict)
                 line = file.readline()
                 cnt = cnt+1
+            logger.info(f"加载数据成功! 共{cnt}行数据")
                 
     def _handle_single_line(self, graph: GraphMessage, data: dict):
         disease = {}
@@ -143,21 +143,21 @@ class GraphBuilder:
         try:
             self._neo4j_driver.create(node)
         except Exception as e:
-            print(f"Exception: {e}")
+            logger.error(f"导入节点失败: {e} | 节点类型: Disease")
     
     def _build_normal_node(self, label: str, node_name: str):
         node = Node(label, name=node_name)
         try: 
             self._neo4j_driver.create(node)
         except Exception as e:
-            print(f"Exception: {e}")
+            logger.error(f"导入节点失败: {e} | 节点类型: {label}")
     
     def _build_edge(self, start_node_label: str, end_node_label: str, start_node_name: str, end_node_name: str, relation_type: str, relation_name: str):
         query = "match(p:%s),(q:%s) where p.name='%s' and q.name='%s' create (p)-[relation:%s{name:'%s'}]->(q)" % (start_node_label, end_node_label, start_node_name, end_node_name, relation_type, relation_name)
         try:
             summery = self._neo4j_driver.run(query).summary
         except Exception as e:
-            print(e)
+            logger.error(f"导入边失败: {e} | 开始节点: {start_node_label} {start_node_name} | 终止节点: {end_node_label} {end_node_name} | 边的类型: {relation_type} {relation_name}")
     
     def build_nodes(self):
         logger.info(f"正在导入节点数据到 Neo4j ...")

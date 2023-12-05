@@ -9,13 +9,13 @@ deploy-neo4j:
 	neo4j:4.4.28
 
 run-all:
-	@python ./src/graph.py --data all
+	@python src/graph_qa.py --data all
 
 run-test:
-	@python ./src/graph.py --data test
+	@python src/graph_qa.py --data test
 
 clean:
 	@find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete
 
 test:
-	@python ./src/test.py
+	@python src/test.py

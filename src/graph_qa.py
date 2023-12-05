@@ -26,10 +26,10 @@ class GraphQA:
         answers: list[str] = []
         
         intention, entity_map = self.intention_recognizer.classify(normal_language_question=input)
-        logger.info(f"已分析到自然语言中存在的意图和实体 | 意图: {intention} | 实体: {entity_map}")
         
         cyphers = self.cypher_generater.generate(intention, entity_map)
         if len(cyphers) == 0:
+            logger.info(f"未生成 Cyher 查询 | 自然语言意图为 {intention} | 自然语言包含的实体为 {entity_map}",)
             return self.answer_generater.no_data_answer
         for cypher in cyphers:
             search_result = self.graph_searcher.search(intention, cypher)
@@ -38,7 +38,7 @@ class GraphQA:
             
         logger.info(f"得到的回答: {answers}")
         
-        return '\n' + '\n'.join(answers)
+        return '\n' + '\n'.join(answers) + '\n'
     
     def console_loop(self):
         print("基于知识图谱的问答系统已启动, 请提问: (输入 'exit' 退出)")
@@ -47,8 +47,12 @@ class GraphQA:
             if user_input.lower() == 'exit':
                 break
             else:
-                answer = self.run(user_input)
-                print(answer)
+                try:
+                    answer = self.run(user_input)
+                    print(answer)
+                except Exception as e:
+                    logger.error(f"最外层收集到的错误: {e}")
+                    print("内部错误, 请重试")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -73,72 +73,72 @@ class CypherGenerater:
         根据意图和实体, 生成 Cypher 查询语句 
         """
         
-        logger.info(f"根据意图和实体, 正在生成 Cypher 查询语句... | 意图: {intention} | 实体: {entity_map}")
+        logger.info(f"根据意图和实体, 正在生成 Cypher 查询... | 意图: {intention} | 实体: {entity_map}")
         
-        sqls: list[str] = []
+        cyphers: list[str] = []
         
         if intention == IntentionCategory.DiseaseDescription:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseDescription(disease_name=disease))
+                cyphers.append(handle_DiseaseDescription(disease_name=disease))
         elif intention == IntentionCategory.DiseasePrevent:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseasePrevent(disease_name=disease))
+                cyphers.append(handle_DiseasePrevent(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCause:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCause(disease_name=disease))
+                cyphers.append(handle_DiseaseCause(disease_name=disease))
         elif intention == IntentionCategory.DiseaseGetProb:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseGetProb(disease_name=disease))
+                cyphers.append(handle_DiseaseGetProb(disease_name=disease))
         elif intention == IntentionCategory.DiseaseGetWay:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseGetWay(disease_name=disease))
+                cyphers.append(handle_DiseaseGetWay(disease_name=disease))
         elif intention == IntentionCategory.DiseasePeopleEasyGet:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseasePeopleEasyGet(disease_name=disease))
+                cyphers.append(handle_DiseasePeopleEasyGet(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCureWay:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCureWay(disease_name=disease))
+                cyphers.append(handle_DiseaseCureWay(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCureTime:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCureTime(disease_name=disease))
+                cyphers.append(handle_DiseaseCureTime(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCureProb:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCureProb(disease_name=disease))
+                cyphers.append(handle_DiseaseCureProb(disease_name=disease))
         
         elif intention == IntentionCategory.DiseaseShouldNotEat:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseShouldNotEat(disease_name=disease))
+                cyphers.append(handle_DiseaseShouldNotEat(disease_name=disease))
         elif intention == IntentionCategory.DiseaseShouldEat:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseShouldEat(disease_name=disease))
+                cyphers.append(handle_DiseaseShouldEat(disease_name=disease))
         elif intention == IntentionCategory.DiseaseDrug:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseDrug(disease_name=disease))
+                cyphers.append(handle_DiseaseDrug(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCheck:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCheck(disease_name=disease))
+                cyphers.append(handle_DiseaseCheck(disease_name=disease))
         elif intention == IntentionCategory.DiseaseSymptom:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseSymptom(disease_name=disease))
+                cyphers.append(handle_DiseaseSymptom(disease_name=disease))
         elif intention == IntentionCategory.DiseaseCoExist:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseCoExist(disease_name=disease))
+                cyphers.append(handle_DiseaseCoExist(disease_name=disease))
         elif intention == IntentionCategory.DiseaseDepartment:
             for disease in entity_map[GraphLabel.Disease]:
-                sqls.append(handle_DiseaseDepartment(disease_name=disease))
+                cyphers.append(handle_DiseaseDepartment(disease_name=disease))
        
         elif intention == IntentionCategory.SymptomDisease:
             for symptom in entity_map[GraphLabel.Symptom]:
-                sqls.append(handle_SymptomDisease(symptom_name=symptom))
+                cyphers.append(handle_SymptomDisease(symptom_name=symptom))
         elif intention == IntentionCategory.DrugDisease:
             for drug in entity_map[GraphLabel.Drug]:
-                sqls.append(handle_DrugDisease(drug_name=drug))
+                cyphers.append(handle_DrugDisease(drug_name=drug))
         elif intention == IntentionCategory.DepartmentDisease:
             for department in entity_map[GraphLabel.Department]:
-                sqls.append(handle_DepartmentDisease(department_name=department))
+                cyphers.append(handle_DepartmentDisease(department_name=department))
         elif intention == IntentionCategory.CheckDisease:
             for check in entity_map[GraphLabel.Check]:
-                sqls.append(handle_CheckDisease(check_name=check))
+                cyphers.append(handle_CheckDisease(check_name=check))
         
         elif intention == IntentionCategory.NotSupport:
             pass
@@ -146,6 +146,6 @@ class CypherGenerater:
         else:
             pass
         
-        logger.info(f"已生成的 Cypher 语句 | 长度: {len(sqls)} | 内容: {sqls}")
+        logger.info(f"已生成 Cypher 查询 | 长度: {len(cyphers)} | 内容: {cyphers}")
         
-        return sqls
+        return cyphers
