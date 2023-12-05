@@ -137,6 +137,8 @@ class AnswerGenerater:
                 if isinstance(result["decription"], list):
                     for value in result["decription"]:
                         obj.append(value)
+                else:
+                    obj.append(result["decription"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -148,6 +150,8 @@ class AnswerGenerater:
                 if isinstance(result["prevent"], list):
                     for value in result["prevent"]:
                         obj.append(value)
+                else:
+                    obj.append(result["prevent"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -159,6 +163,8 @@ class AnswerGenerater:
                 if isinstance(result["cause"], list):
                     for value in result["cause"]:
                         obj.append(value)
+                else:
+                    obj.append(result["cause"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -170,6 +176,8 @@ class AnswerGenerater:
                 if isinstance(result["get_prob"], list):
                     for value in result["get_prob"]:
                         obj.append(value)
+                else:
+                    obj.append(result["get_prob"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -181,6 +189,8 @@ class AnswerGenerater:
                 if isinstance(result["get_way"], list):
                     for value in result["get_way"]:
                         obj.append(value)
+                else:
+                    obj.append(result["get_way"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -192,6 +202,8 @@ class AnswerGenerater:
                 if isinstance(result["people_easy_get"], list):
                     for value in result["people_easy_get"]:
                         obj.append(value)
+                else:
+                    obj.append(result["people_easy_get"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -203,6 +215,8 @@ class AnswerGenerater:
                 if isinstance(result["cure_way"], list):
                     for value in result["cure_way"]:
                         obj.append(value)
+                else:
+                    obj.append(result["cure_way"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -214,6 +228,8 @@ class AnswerGenerater:
                 if isinstance(result["cure_time"], list):
                     for value in result["cure_time"]:
                         obj.append(value)
+                else:
+                    obj.append(result["cure_time"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -225,6 +241,8 @@ class AnswerGenerater:
                 if isinstance(result["cure_prob"], list):
                     for value in result["cure_prob"]:
                         obj.append(value)
+                else:
+                    obj.append(result["cure_prob"])
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -236,7 +254,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:                    
                 obj.append(result["food"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -246,7 +263,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["food"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -256,7 +272,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["drug"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -266,7 +281,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["check"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -276,7 +290,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["symptom"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -286,7 +299,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["coexist"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -296,7 +308,6 @@ class AnswerGenerater:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["department"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -308,7 +319,6 @@ class AnswerGenerater:
             symptom = search_result[0]["symptom"]
             for result in search_result:
                 obj.append(result["disease"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -318,7 +328,6 @@ class AnswerGenerater:
             drug = search_result[0]["drug"]
             for result in search_result:
                 obj.append(result["disease"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -328,7 +337,6 @@ class AnswerGenerater:
             department = search_result[0]["department"]
             for result in search_result:
                 obj.append(result["disease"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
@@ -338,7 +346,6 @@ class AnswerGenerater:
             check = search_result[0]["check"]
             for result in search_result:
                 obj.append(result["disease"])
-            answer = ""
             if len(obj) == 0:
                 answer = self.no_data_answer
             else:
