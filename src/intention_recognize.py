@@ -21,17 +21,17 @@ class IntentionRecognizer:
         """
         trie_tree = ahocorasick.Automaton()
         trie_node_list = []
-        for disease in graphMessage.diseases:
+        for disease in graphMessage.node_diseases:
             trie_node_list.append(tuple([GraphLabel.Disease, disease["name"]]))
-        for symptom in graphMessage.symptoms:
+        for symptom in graphMessage.node_symptoms:
             trie_node_list.append(tuple([GraphLabel.Symptom, symptom]))
-        for drug in graphMessage.drugs:
+        for drug in graphMessage.node_drugs:
             trie_node_list.append(tuple([GraphLabel.Drug, drug]))
-        for department in graphMessage.departments:
+        for department in graphMessage.node_departments:
             trie_node_list.append(tuple([GraphLabel.Department, department]))
-        for food in graphMessage.foods:
+        for food in graphMessage.node_foods:
             trie_node_list.append(tuple([GraphLabel.Food, food]))
-        for check in graphMessage.checks:
+        for check in graphMessage.node_checks:
             trie_node_list.append(tuple([GraphLabel.Check, check]))
         for trie_node in trie_node_list:
             trie_tree.add_word(trie_node[1], trie_node)

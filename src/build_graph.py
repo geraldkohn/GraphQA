@@ -8,21 +8,21 @@ from config import Config
 class GraphMessage:
     def __init__(self):
         # 节点
-        self.diseases = []       # 疾病
-        self.symptoms = []       # 症状
-        self.drugs = []          # 药品
-        self.departments = []    # 科室
-        self.foods = []          # 食物
-        self.checks = []         # 检查
+        self.node_diseases = []       # 疾病
+        self.node_symptoms = []       # 症状
+        self.node_drugs = []          # 药品
+        self.node_departments = []    # 科室
+        self.node_foods = []          # 食物
+        self.node_checks = []         # 检查
 
         # 关系
-        self.disease_not_eat = []           # 疾病--忌吃食物关系
-        self.disease_do_eat = []            # 疾病--宜吃食物关系
-        self.disease_drug = []              # 疾病--药品关系
-        self.disease_check = []             # 疾病--检查关系
-        self.disease_symptom = []           # 疾病--症状关系
-        self.disease_disease_coexist = []   # 疾病--疾病关系 (并发疾病)
-        self.disease_department = []        # 疾病--科室关系
+        self.relation_disease_not_eat = []           # 疾病--忌吃食物关系
+        self.relation_disease_do_eat = []            # 疾病--宜吃食物关系
+        self.relation_disease_drug = []              # 疾病--药品关系
+        self.relation_disease_check = []             # 疾病--检查关系
+        self.relation_disease_symptom = []           # 疾病--症状关系
+        self.relation_disease_disease_coexist = []   # 疾病--疾病关系 (并发疾病)
+        self.relation_disease_department = []        # 疾病--科室关系
 
 class DataLoader:
     def __init__(self, data_path: str):
@@ -70,70 +70,70 @@ class DataLoader:
         for info in self._disease_info:
             if info in data:
                 disease[info] = data[info]
-        graph.diseases.append(disease)
+        graph.node_diseases.append(disease)
         
         disease_name = data[self._attr_name]
         
         if self._attr_department in data:
             departments = data[self._attr_department]
             for value in departments:
-                if value not in graph.departments:
-                    graph.departments.append(value)
+                if value not in graph.node_departments:
+                    graph.node_departments.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_department:
-                    graph.disease_department.append(relation)
+                if relation not in graph.relation_disease_department:
+                    graph.relation_disease_department.append(relation)
                     
         if self._attr_symptom in data:
             symptoms = data[self._attr_symptom]
             for value in symptoms:
-                if value not in graph.symptoms:
-                    graph.symptoms.append(value)
+                if value not in graph.node_symptoms:
+                    graph.node_symptoms.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_symptom:
-                    graph.disease_symptom.append(relation)
+                if relation not in graph.relation_disease_symptom:
+                    graph.relation_disease_symptom.append(relation)
                     
         if self._attr_drug in data:
             drugs = data[self._attr_drug]
             for value in drugs:
-                if value not in graph.drugs:
-                    graph.drugs.append(value)
+                if value not in graph.node_drugs:
+                    graph.node_drugs.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_symptom:
-                    graph.disease_drug.append(relation)
+                if relation not in graph.relation_disease_drug:
+                    graph.relation_disease_drug.append(relation)
                     
         if self._attr_should_eat in data:
             should_eat_foods = data[self._attr_should_eat]
             for value in should_eat_foods:
-                if value not in graph.foods:
-                    graph.foods.append(value)
+                if value not in graph.node_foods:
+                    graph.node_foods.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_symptom:
-                    graph.disease_do_eat.append(relation)
+                if relation not in graph.relation_disease_do_eat:
+                    graph.relation_disease_do_eat.append(relation)
                 
         if self._attr_should_not_eat in data:
             should_not_eat_foods = data[self._attr_should_not_eat]
             for value in should_not_eat_foods:
-                if value not in graph.foods:
-                    graph.foods.append(value)
+                if value not in graph.node_foods:
+                    graph.node_foods.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_symptom:
-                    graph.disease_not_eat.append(relation)
+                if relation not in graph.relation_disease_not_eat:
+                    graph.relation_disease_not_eat.append(relation)
                 
         if self._attr_check in data:
             checks = data[self._attr_check]
             for value in checks:
-                if value not in graph.checks:
-                    graph.checks.append(value)
+                if value not in graph.node_checks:
+                    graph.node_checks.append(value)
                 relation = [disease_name, value]
-                if relation not in graph.disease_symptom:
-                    graph.disease_check.append(relation)
+                if relation not in graph.relation_disease_check:
+                    graph.relation_disease_check.append(relation)
                 
         if self._attr_coexist_disease in data:
             coexist_disease = data[self._attr_coexist_disease]
             for value in coexist_disease:
                 relation = [disease_name, value]
-                if relation not in graph.disease_disease_coexist:
-                    graph.disease_disease_coexist.append(relation)
+                if relation not in graph.relation_disease_disease_coexist:
+                    graph.relation_disease_disease_coexist.append(relation)
 
 class GraphBuilder:
     def __init__(self, graph: GraphMessage):
@@ -166,28 +166,28 @@ class GraphBuilder:
         try:
             logger.info(f"正在导入节点数据到 Neo4j ...")
         
-            logger.info(f"正在导入 疾病 节点 ..., 共 {len(self.graph.diseases)} 条")
-            for disease_dict in self.graph.diseases:
+            logger.info(f"正在导入 疾病 节点 ..., 共 {len(self.graph.node_diseases)} 条")
+            for disease_dict in self.graph.node_diseases:
                 self._build_disease_node(disease=disease_dict)
             
-            logger.info(f"正在导入 症状 节点 ..., 共 {len(self.graph.symptoms)} 条")
-            for symptom_name in self.graph.symptoms:
+            logger.info(f"正在导入 症状 节点 ..., 共 {len(self.graph.node_symptoms)} 条")
+            for symptom_name in self.graph.node_symptoms:
                 self._build_normal_node(label=GraphLabel.Symptom.value, node_name=symptom_name)
             
-            logger.info(f"正在导入 药品 节点 ..., 共 {len(self.graph.drugs)} 条")
-            for drug_name in self.graph.drugs:
+            logger.info(f"正在导入 药品 节点 ..., 共 {len(self.graph.node_drugs)} 条")
+            for drug_name in self.graph.node_drugs:
                 self._build_normal_node(label=GraphLabel.Drug.value, node_name=drug_name)
             
-            logger.info(f"正在导入 科室 节点 ..., 共 {len(self.graph.departments)} 条")
-            for department_name in self.graph.departments:
+            logger.info(f"正在导入 科室 节点 ..., 共 {len(self.graph.node_departments)} 条")
+            for department_name in self.graph.node_departments:
                 self._build_normal_node(label=GraphLabel.Department.value, node_name=department_name)
         
-            logger.info(f"正在导入 食物 节点 ..., 共 {len(self.graph.foods)} 条")
-            for food_name in self.graph.foods:
+            logger.info(f"正在导入 食物 节点 ..., 共 {len(self.graph.node_foods)} 条")
+            for food_name in self.graph.node_foods:
                 self._build_normal_node(label=GraphLabel.Food.value, node_name=food_name)
             
-            logger.info(f"正在导入 检查 节点 ..., 共 {len(self.graph.checks)} 条")
-            for check_name in self.graph.checks:
+            logger.info(f"正在导入 检查 节点 ..., 共 {len(self.graph.node_checks)} 条")
+            for check_name in self.graph.node_checks:
                 self._build_normal_node(label=GraphLabel.Check.value, node_name=check_name)
         except Exception as e:
             logger.error(f"导入节点数据到 Neo4j 时抛出异常: {e}")
@@ -195,48 +195,48 @@ class GraphBuilder:
     def build_edges(self):
         try: 
             logger.info(f"正在导入边数据到 Neo4j ...")
+            
+            logger.info(f"正在导入 症状 边 ..., 共 {len(self.graph.relation_disease_symptom)} 条")
+            for edge in self.graph.relation_disease_symptom:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.HasSymptom.value, relation_name='症状')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
         
-            logger.info(f"正在导入 忌吃 边 ..., 共 {len(self.graph.disease_not_eat)} 条")
-            for edge in self.graph.disease_not_eat:
+            logger.info(f"正在导入 忌吃 边 ..., 共 {len(self.graph.relation_disease_not_eat)} 条")
+            for edge in self.graph.relation_disease_not_eat:
                 if len(edge) >= 2:
                     self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldNotEat.value, relation_name='忌吃')
                 else:
                     logger.error(f"边的长度小于2 | 边: {edge}")
             
-            logger.info(f"正在导入 宜吃 边 ..., 共 {len(self.graph.disease_do_eat)} 条")
-            for edge in self.graph.disease_do_eat:
+            logger.info(f"正在导入 宜吃 边 ..., 共 {len(self.graph.relation_disease_do_eat)} 条")
+            for edge in self.graph.relation_disease_do_eat:
                 if len(edge) >= 2:
                     self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldEat.value, relation_name='宜吃')
                 else:
                     logger.error(f"边的长度小于2 | 边: {edge}")
             
-            logger.info(f"正在导入 推荐用药 边 ..., 共 {len(self.graph.disease_drug)} 条")
-            for edge in self.graph.disease_drug:
+            logger.info(f"正在导入 推荐用药 边 ..., 共 {len(self.graph.relation_disease_drug)} 条")
+            for edge in self.graph.relation_disease_drug:
                 if len(edge) >= 2:
                     self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Drug.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.RecommandDrug.value, relation_name='推荐用药')
                 else:
                     logger.error(f"边的长度小于2 | 边: {edge}")
             
-            logger.info(f"正在导入 需要做的检查 边 ..., 共 {len(self.graph.disease_check)} 条")
-            for edge in self.graph.disease_check:
+            logger.info(f"正在导入 需要做的检查 边 ..., 共 {len(self.graph.relation_disease_check)} 条")
+            for edge in self.graph.relation_disease_check:
                 self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Check.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.NeedCheck.value, relation_name='需要做的检查')
             
-            logger.info(f"正在导入 症状 边 ..., 共 {len(self.graph.disease_symptom)} 条")
-            for edge in self.graph.symptoms:
-                if len(edge) >= 2:
-                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.HasSymptom.value, relation_name='症状')
-                else:
-                    logger.error(f"边的长度小于2 | 边: {edge}")
-            
-            logger.info(f"正在导入 并发症 边 ..., 共 {len(self.graph.disease_disease_coexist)} 条")
-            for edge in self.graph.disease_disease_coexist:
+            logger.info(f"正在导入 并发症 边 ..., 共 {len(self.graph.relation_disease_disease_coexist)} 条")
+            for edge in self.graph.relation_disease_disease_coexist:
                 if len(edge) >= 2:
                     self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Disease.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.AcompanyWith.value, relation_name='并发症')
                 else:
                     logger.error(f"边的长度小于2 | 边: {edge}")
             
-            logger.info(f"正在导入 所属科室 边 ..., 共 {len(self.graph.disease_department)} 条")
-            for edge in self.graph.disease_department:
+            logger.info(f"正在导入 所属科室 边 ..., 共 {len(self.graph.relation_disease_department)} 条")
+            for edge in self.graph.relation_disease_department:
                 if len(edge) >= 2:
                     self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Department.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.BelongTo.value, relation_name='所属科室')
                 else:

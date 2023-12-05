@@ -1,3 +1,4 @@
+from utils import logger
 from intention_recognize import IntentionRecognizer
 from build_graph import DataLoader
 from const import QueryWordCollection
@@ -40,7 +41,6 @@ def test_intention_recognize_classify():
     for query in query_list:
         intention, label_dict = intention_recognize.classify(query)
         print(f"query: {query} | intention: {intention} | label_dict: {label_dict}")
-    
+            
 if __name__ == "__main__":
-    # print_Buddha()
     test_intention_recognize_classify()
