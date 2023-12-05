@@ -60,14 +60,14 @@ class GraphQA:
         except Exception as e:
             logger.error(f"启动问答系统时失败 {e}")
     
-    def run(self, input: str, intention_recognizer: IntentionRecognizer, cypher_generater: CypherGenerater, graph_searcher: GraphSearcher, answer_generater: AnswerGenerater) -> str:
+    def run(self, normal_language_query: str, intention_recognizer: IntentionRecognizer, cypher_generater: CypherGenerater, graph_searcher: GraphSearcher, answer_generater: AnswerGenerater) -> str:
         """
         问答
         """
         
         answers: list[str] = []
         
-        intention, entity_map = intention_recognizer.classify(normal_language_question=input)
+        intention, entity_map = intention_recognizer.classify(normal_language_question=normal_language_query)
         
         cyphers = cypher_generater.generate(intention, entity_map)
         if len(cyphers) == 0:
@@ -78,7 +78,9 @@ class GraphQA:
             answer = answer_generater.answer(intention, search_result)
             answers.append(answer)
         
-        return '\n' + '\n'.join(answers) + '\n'
+        res = '\n' + '\n'.join(answers) + '\n'
+        logger.info(f"提问: {normal_language_query} | 回答: {res}")
+        return res
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

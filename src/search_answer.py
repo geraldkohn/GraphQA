@@ -10,7 +10,7 @@ class GraphSearcher:
         self._config = Config()
         self._neo4j_driver = Graph('bolt://{}:{}'.format(self._config.neo4j_host, self._config.neo4j_port), auth=(self._config.neo4j_user, self._config.neo4j_password))
     
-    def search(self, intention: IntentionCategory, sql: str) -> list[dict[str, str]]:
+    def search(self, intention: IntentionCategory, sql: str) -> list[dict]:
         logger.info(f"正在根据 Cypher 语句查询 Neo4j 数据库... | 意图: {intention} | 查询语句: {sql}")
         if intention == IntentionCategory.NotSupport:
             return []
@@ -22,7 +22,7 @@ class GraphSearcher:
         finally:
             return self._handle_result_from_neo4j(intention=intention, result_list=res)
     
-    def _handle_result_from_neo4j(self, intention: IntentionCategory, result_list: list[dict]) -> list[dict[str, str]]:
+    def _handle_result_from_neo4j(self, intention: IntentionCategory, result_list: list[dict]) -> list[dict]:
         """
         处理 Neo4j 返回字典的 key-value 
         """
@@ -111,160 +111,196 @@ class AnswerGenerater:
         self.not_support_answer = "抱歉, 我没能理解您的意思, 请换一种问法"
         self.no_data_answer = "抱歉, 您问的相关信息还未收录到数据库中, 我无法回答"
     
-    def answer(self, intention: IntentionCategory, search_result: list[dict[str, str]]) -> str:
+    def answer(self, intention: IntentionCategory, search_result: list[dict]) -> str:
         logger.info(f"正在根据意图和实体做出回答... | 意图: {intention} | 实体: {search_result}")
         
         if len(search_result) == 0:
             return self.no_data_answer
         
-        obj: list[str] = []
+        """ 
+        Neo4j 查找返回的数据就类似于一个表结构
         
+            x           y           z
+        1  xxx         yyy      [zzz, zzz]
+        2  xxx         yyy      [zzz, zzz]
+        3  xxx         yyy      [zzz, zzz]
+        4  xxx         yyy      [zzz, zzz]
+        """
+        
+        obj: list[str] = []
+        answer = ""
+        
+        # 这里的 result 就相当于表的一行
         if intention == IntentionCategory.DiseaseDescription:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["decription"])
+                if isinstance(result["decription"], list):
+                    for value in result["decription"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的医学详细描述为: {', '.join(obj)}"
+                answer = f"{disease}的医学详细描述为: {', '.join(obj)}"
         
         elif intention == IntentionCategory.DiseasePrevent:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["prevent"])
+                if isinstance(result["prevent"], list):
+                    for value in result["prevent"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的预防措施是: {', '.join(obj)}"
+                answer = f"{disease}的预防措施是: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCause:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["cause"])
+                if isinstance(result["cause"], list):
+                    for value in result["cause"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的患病原因是: {', '.join(obj)}"
+                answer = f"{disease}的患病原因是: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseGetProb:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["get_prob"])
+                if isinstance(result["get_prob"], list):
+                    for value in result["get_prob"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的患病几率是: {', '.join(obj)}"    
+                answer = f"{disease}的患病几率是: {', '.join(obj)}"    
             
         elif intention == IntentionCategory.DiseaseGetWay:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["get_way"])
+                if isinstance(result["get_way"], list):
+                    for value in result["get_way"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的传播途径为: {', '.join(obj)}"
+                answer = f"{disease}的传播途径为: {', '.join(obj)}"
                 
         elif intention == IntentionCategory.DiseasePeopleEasyGet:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["people_easy_get"])
+                if isinstance(result["people_easy_get"], list):
+                    for value in result["people_easy_get"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的易患病群体为: {', '.join(obj)}"
+                answer = f"{disease}的易患病群体为: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCureWay:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["cure_way"])
+                if isinstance(result["cure_way"], list):
+                    for value in result["cure_way"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的治疗方式有: {', '.join(obj)}"    
+                answer = f"{disease}的治疗方式有: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCureTime:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["cure_time"])
+                if isinstance(result["cure_time"], list):
+                    for value in result["cure_time"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的康复时间大概是: {', '.join(obj)}"
+                answer = f"{disease}的康复时间大概是: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCureProb:
             disease = search_result[0]["disease"]
             for result in search_result:
-                obj.append(result["cure_prob"])
+                if isinstance(result["cure_prob"], list):
+                    for value in result["cure_prob"]:
+                        obj.append(value)
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的治愈几率大概是: {', '.join(obj)}"
+                answer = f"{disease}的治愈几率大概是: {', '.join(obj)}"
                 
         # -------------------------------------------------------------
                 
         elif intention == IntentionCategory.DiseaseShouldNotEat:
             disease = search_result[0]["disease"]
-            for result in search_result:
+            for result in search_result:                    
                 obj.append(result["food"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"患有{disease}需要忌口的食物有: {', '.join(obj)}"
+                answer = f"患有{disease}需要忌口的食物有: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseShouldEat:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["food"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"患有{disease}推荐吃的食物有: {', '.join(obj)}"
+                answer = f"患有{disease}推荐吃的食物有: {', '.join(obj)}"
                 
         elif intention == IntentionCategory.DiseaseDrug:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["drug"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"针对{disease}, 推荐服用: {', '.join(obj)}"    
+                answer = f"针对{disease}, 推荐服用: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCheck:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["check"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}需要做{', '.join(obj)}等检查项目"    
+                answer = f"{disease}需要做{', '.join(obj)}等检查项目"
             
         elif intention == IntentionCategory.DiseaseSymptom:
             disease = search_result[0]["disease"]
-            relation = "症状"
             for result in search_result:
                 obj.append(result["symptom"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}的症状通常表现为: {', '.join(obj)}"    
+                answer = f"{disease}的症状通常表现为: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseCoExist:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["coexist"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}常见的并发症有: {', '.join(obj)}"
+                answer = f"{disease}常见的并发症有: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DiseaseDepartment:
             disease = search_result[0]["disease"]
             for result in search_result:
                 obj.append(result["department"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{disease}应该去{', '.join(obj)}做检查"
+                answer = f"{disease}应该去{', '.join(obj)}做检查"
                 
         # -------------------------------------------------------------
         
@@ -272,40 +308,48 @@ class AnswerGenerater:
             symptom = search_result[0]["symptom"]
             for result in search_result:
                 obj.append(result["disease"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"与症状{symptom}相关联的疾病为: {', '.join(obj)}"
+                answer = f"与症状{symptom}相关联的疾病为: {', '.join(obj)}"
             
         elif intention == IntentionCategory.DrugDisease:
             drug = search_result[0]["drug"]
-            relation = "治疗的疾病"
             for result in search_result:
                 obj.append(result["disease"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{drug}对{', '.join(obj)}起效果"
+                answer = f"{drug}对{', '.join(obj)}起效果"
             
         elif intention == IntentionCategory.DepartmentDisease:
             department = search_result[0]["department"]
             for result in search_result:
                 obj.append(result["disease"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"{department}可以诊治的疾病有: {', '.join(obj)}"
+                answer = f"{department}可以诊治的疾病有: {', '.join(obj)}"
             
         elif intention == IntentionCategory.CheckDisease:
             check = search_result[0]["check"]
             for result in search_result:
                 obj.append(result["disease"])
+            answer = ""
             if len(obj) == 0:
-                return self.no_data_answer
+                answer = self.no_data_answer
             else:
-                return f"患有{', '.join(obj)}需要做这个检查项目"
+                answer = f"患有{', '.join(obj)}需要做这个检查项目"
         
         elif intention == IntentionCategory.NotSupport:
-            return self.not_support_answer
+            answer = self.not_support_answer
+            
         else:
-            return self.not_support_answer
+            answer = self.not_support_answer
+
+        logger.info(f"问答系统做出的回答: {answer}")
+        return answer
+        
