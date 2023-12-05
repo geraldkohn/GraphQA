@@ -9,10 +9,16 @@ deploy-neo4j:
 	neo4j:4.4.28
 
 run-all:
-	@python src/graph_qa.py --data all
+	@python src/graph_qa.py --data_path all --write_to_neo4j yes
 
 run-test:
-	@python src/graph_qa.py --data test
+	@python src/graph_qa.py --data_path test --write_to_neo4j yes
+
+restart-all:
+	@python src/graph_qa.py --data_path all --write_to_neo4j no
+
+restart-test:
+	@python src/graph_qa.py --data_path test --write_to_neo4j no
 
 clean:
 	@find . -type f -name '*.py[co]' -delete -o -type d -name __pycache__ -delete

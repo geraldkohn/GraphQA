@@ -61,6 +61,9 @@ class DataLoader:
                 line = file.readline()
                 cnt = cnt+1
             logger.info(f"加载数据成功! 共{cnt}行数据")
+    
+    def get_graph(self) -> GraphMessage:
+        return self.graph
                 
     def _handle_single_line(self, graph: GraphMessage, data: dict):
         disease = {}
@@ -160,59 +163,83 @@ class GraphBuilder:
             logger.error(f"导入边失败: {e} | 开始节点: {start_node_label} {start_node_name} | 终止节点: {end_node_label} {end_node_name} | 边的类型: {relation_type} {relation_name}")
     
     def build_nodes(self):
-        logger.info(f"正在导入节点数据到 Neo4j ...")
+        try:
+            logger.info(f"正在导入节点数据到 Neo4j ...")
         
-        logger.info(f"正在导入 疾病 节点 ..., 共 {len(self.graph.diseases)} 条")
-        for disease_dict in self.graph.diseases:
-            self._build_disease_node(disease=disease_dict)
+            logger.info(f"正在导入 疾病 节点 ..., 共 {len(self.graph.diseases)} 条")
+            for disease_dict in self.graph.diseases:
+                self._build_disease_node(disease=disease_dict)
             
-        logger.info(f"正在导入 症状 节点 ..., 共 {len(self.graph.symptoms)} 条")
-        for symptom_name in self.graph.symptoms:
-            self._build_normal_node(label=GraphLabel.Symptom.value, node_name=symptom_name)
+            logger.info(f"正在导入 症状 节点 ..., 共 {len(self.graph.symptoms)} 条")
+            for symptom_name in self.graph.symptoms:
+                self._build_normal_node(label=GraphLabel.Symptom.value, node_name=symptom_name)
             
-        logger.info(f"正在导入 药品 节点 ..., 共 {len(self.graph.drugs)} 条")
-        for drug_name in self.graph.drugs:
-            self._build_normal_node(label=GraphLabel.Drug.value, node_name=drug_name)
+            logger.info(f"正在导入 药品 节点 ..., 共 {len(self.graph.drugs)} 条")
+            for drug_name in self.graph.drugs:
+                self._build_normal_node(label=GraphLabel.Drug.value, node_name=drug_name)
             
-        logger.info(f"正在导入 科室 节点 ..., 共 {len(self.graph.departments)} 条")
-        for department_name in self.graph.departments:
-            self._build_normal_node(label=GraphLabel.Department.value, node_name=department_name)
+            logger.info(f"正在导入 科室 节点 ..., 共 {len(self.graph.departments)} 条")
+            for department_name in self.graph.departments:
+                self._build_normal_node(label=GraphLabel.Department.value, node_name=department_name)
         
-        logger.info(f"正在导入 食物 节点 ..., 共 {len(self.graph.foods)} 条")
-        for food_name in self.graph.foods:
-            self._build_normal_node(label=GraphLabel.Food.value, node_name=food_name)
+            logger.info(f"正在导入 食物 节点 ..., 共 {len(self.graph.foods)} 条")
+            for food_name in self.graph.foods:
+                self._build_normal_node(label=GraphLabel.Food.value, node_name=food_name)
             
-        logger.info(f"正在导入 检查 节点 ..., 共 {len(self.graph.checks)} 条")
-        for check_name in self.graph.checks:
-            self._build_normal_node(label=GraphLabel.Check.value, node_name=check_name)
+            logger.info(f"正在导入 检查 节点 ..., 共 {len(self.graph.checks)} 条")
+            for check_name in self.graph.checks:
+                self._build_normal_node(label=GraphLabel.Check.value, node_name=check_name)
+        except Exception as e:
+            logger.error(f"导入节点数据到 Neo4j 时抛出异常: {e}")
         
     def build_edges(self):
-        logger.info(f"正在导入边数据到 Neo4j ...")
+        try: 
+            logger.info(f"正在导入边数据到 Neo4j ...")
         
-        logger.info(f"正在导入 忌吃 边 ..., 共 {len(self.graph.disease_not_eat)} 条")
-        for edge in self.graph.disease_not_eat:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldNotEat.value, relation_name='忌吃')
+            logger.info(f"正在导入 忌吃 边 ..., 共 {len(self.graph.disease_not_eat)} 条")
+            for edge in self.graph.disease_not_eat:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldNotEat.value, relation_name='忌吃')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
             
-        logger.info(f"正在导入 宜吃 边 ..., 共 {len(self.graph.disease_do_eat)} 条")
-        for edge in self.graph.disease_do_eat:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldEat.value, relation_name='宜吃')
+            logger.info(f"正在导入 宜吃 边 ..., 共 {len(self.graph.disease_do_eat)} 条")
+            for edge in self.graph.disease_do_eat:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Food.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.ShouldEat.value, relation_name='宜吃')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
             
-        logger.info(f"正在导入 推荐用药 边 ..., 共 {len(self.graph.disease_drug)} 条")
-        for edge in self.graph.disease_drug:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Drug.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.RecommandDrug.value, relation_name='推荐用药')
+            logger.info(f"正在导入 推荐用药 边 ..., 共 {len(self.graph.disease_drug)} 条")
+            for edge in self.graph.disease_drug:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Drug.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.RecommandDrug.value, relation_name='推荐用药')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
             
-        logger.info(f"正在导入 需要做的检查 边 ..., 共 {len(self.graph.disease_check)} 条")
-        for edge in self.graph.disease_check:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Check.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.NeedCheck.value, relation_name='需要做的检查')
+            logger.info(f"正在导入 需要做的检查 边 ..., 共 {len(self.graph.disease_check)} 条")
+            for edge in self.graph.disease_check:
+                self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Check.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.NeedCheck.value, relation_name='需要做的检查')
             
-        logger.info(f"正在导入 症状 边 ..., 共 {len(self.graph.disease_symptom)} 条")
-        for edge in self.graph.symptoms:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.HasSymptom.value, relation_name='症状')
+            logger.info(f"正在导入 症状 边 ..., 共 {len(self.graph.disease_symptom)} 条")
+            for edge in self.graph.symptoms:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Symptom.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.HasSymptom.value, relation_name='症状')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
             
-        logger.info(f"正在导入 并发症 边 ..., 共 {len(self.graph.disease_disease_coexist)} 条")
-        for edge in self.graph.disease_disease_coexist:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Disease.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.AcompanyWith.value, relation_name='并发症')
+            logger.info(f"正在导入 并发症 边 ..., 共 {len(self.graph.disease_disease_coexist)} 条")
+            for edge in self.graph.disease_disease_coexist:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Disease.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.AcompanyWith.value, relation_name='并发症')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
             
-        logger.info(f"正在导入 所属科室 边 ..., 共 {len(self.graph.disease_department)} 条")
-        for edge in self.graph.disease_department:
-            self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Department.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.BelongTo.value, relation_name='所属科室')
+            logger.info(f"正在导入 所属科室 边 ..., 共 {len(self.graph.disease_department)} 条")
+            for edge in self.graph.disease_department:
+                if len(edge) >= 2:
+                    self._build_edge(start_node_label=GraphLabel.Disease.value, end_node_label=GraphLabel.Department.value, start_node_name=edge[0], end_node_name=edge[1], relation_type=GraphLabel.BelongTo.value, relation_name='所属科室')
+                else:
+                    logger.error(f"边的长度小于2 | 边: {edge}")
+        except Exception as e:
+            logger.error(f"导入边数据到 Neo4j 时抛出异常: {e}")
