@@ -118,3 +118,9 @@ make deploy-neo4j
 * 检查项目->需要做该检查项目的疾病
 
     * 什么病需要做尿常规
+
+## 下一步规划
+
+* 使用 Transformer 模型进行意图识别
+
+* 使用 Transformer 模型进行实体抽取
